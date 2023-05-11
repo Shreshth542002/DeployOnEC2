@@ -50,7 +50,7 @@
                 },
                 body: JSON.stringify(user),
             };
-            fetchData('http://13.126.67.127/users', options)
+            fetchData('http://13.126.67.127:3000/users', options)
                 .then((data) => {
                     console.log('User created:', data);
                     document.getElementById('name').value = '';
@@ -76,7 +76,7 @@
                 },
                 body: JSON.stringify(user),
             };
-            fetchData(`http://13.126.67.127/users/${id}`, options)
+            fetchData(`http://13.126.67.127:3000/users/${id}`, options)
                 .then((data) => {
                     console.log('User updated:', data);
                     getUserList();
@@ -89,7 +89,7 @@
         // Function to delete a user by ID
         function deleteUser(id) {
             const options = { method: 'DELETE' };
-            fetchData(`http://13.126.67.127/users/${id}`, options)
+            fetchData(`http://13.126.67.127:3000/users/${id}`, options)
                 .then(() => {
                     console.log(`User with ID ${id} deleted`);
                     getUserList();
@@ -102,7 +102,7 @@
         // Function to display the list of users
         function getUserList() {
             const options = { method: 'GET' };
-            fetchData('http://13.126.67.127/users', options)
+            fetchData('http://13.126.67.127:3000/users', options)
                 .then((data) => {
                     const userList = document.getElementById('user-list');
                     userList.innerHTML = '';
