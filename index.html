@@ -11,15 +11,15 @@
         <label for="name">Name:</label>
         <input type="text" id="name">
         <br>
-        <button type="submit" onclick="AddToList()">Submit</button>
-        <button onclick="DeleteFromList()">Delete</button>
+        <button type="submit">Submit</button>
+        <!-- <button onclick="DeleteFromList()">Delete</button> -->
         <!-- <button onclick="updateUser()">Update</button> -->
     </form>
 
     <div id="result"></div>
 </body>
     <script>
-            fetch('http://13.126.67.127:3000/users')
+            fetch('http://13.126.67.127:3000/')
                 .then(response => response.json())
                 .then(data => {
                     console.log(data);
@@ -27,11 +27,10 @@
                 .catch(error => {
                     console.error(error);
                 });
-            async function AddToList(){
                 const data = document.getElementById("name").value;
                 const Name = {'name' : data};
     
-                await fetch('http://13.126.67.127:3000/users', {
+            fetch('http://13.126.67.127:3000/', {
                     method: 'POST',
                     headers: {
                         'Access-Control-Allow-Origin': '*',
@@ -44,10 +43,9 @@
                     .then(data => {
                         console.log(data);
                     })
-            }
-            async function DeleteFromList() {
-                try{
-                    const response = await fetch('http://13.126.67.127:3000/users/', {
+            // async function DeleteFromList() {
+                // try{
+            fetch('http://13.126.67.127:3000/', {
                     method: 'DELETE',
                     headers: {
                         'Access-Control-Allow-Origin': '*',
@@ -56,13 +54,10 @@
                     },
                     body: JSON.stringify({ id: 1 })
                 })
-                    const data = await response.json();
-                    console.log(data);
-                    }
-                catch (error) {
-                    console.error(error);
-                }
-                }
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(data);
+                    })
             // async function updateUser(userId, userData) {
             //         try {
             //             const response = await fetch(`http://localhost:3000/users/${userId}`, {

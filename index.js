@@ -1,77 +1,3 @@
-// // HTTP server
-// const http = require('http');
-
-// const server = http.createServer((req, res) => {
-
-//   // Handle requests
-//   if (req.method === 'GET' && req.url === '/users') {
-//     // res.statusCode = 200;
-//     res.end(JSON.stringify(users));
-//   } else if (req.method === 'GET' && req.url.startsWith('/users/')) {
-//     // Get a user by ID
-//     const id = parseInt(req.url.substring('/users/'.length));
-//     const user = users.find((u) => u.id === id);
-//     if (user) {
-//       res.statusCode = 200;
-//       res.end(JSON.stringify(user));
-//     } else {
-//       res.statusCode = 404;
-//       res.end(JSON.stringify({ error: 'User not found' }));
-//     }
-//   } else if (req.method === 'POST' && req.url === 'http://localhost:3000/users') {
-//     // Create a new user
-//     let body = '';
-//     req.on('data', (chunk) => {
-//       body += chunk.toString();
-//     });
-//     req.on('end', () => {
-//       const user = JSON.parse(body);
-//       user.id = users.length + 1;
-//       users.push(user);
-//       res.statusCode = 201;
-//       res.end(JSON.stringify(user));
-//     });
-//   } else if (req.method === 'UPDATE' && req.url.startsWith('/users/')) {
-//     // Update a user by ID
-//     const id = parseInt(req.url.substring('/users/'.length));
-//     const user = users.find((u) => u.id === id);
-//     if (user) {
-//       let body = '';
-//       req.on('data', (chunk) => {
-//         body += chunk.toString();
-//       });
-//       req.on('end', () => {
-//         const updatedUser = JSON.parse(body);
-//         user.name = updatedUser.name;
-//         user.email = updatedUser.email;
-//         res.statusCode = 200;
-//         res.end(JSON.stringify(user));
-//       });
-//     } else {
-//       res.statusCode = 404;
-//       res.end(JSON.stringify({ error: 'User not found' }));
-//     }
-//   } else if (req.method === 'DELETE' && req.url.startsWith('/users/')) {
-//     // Delete a user by ID
-//     const id = parseInt(req.url.substring('/users/'.length));
-//     const index = users.findIndex((u) => u.id === id);
-//     if (index >= 0) {
-//       users.splice(index, 1);
-//       res.statusCode = 204;
-//       res.end();
-//     } else {
-//       res.statusCode = 404;
-//       res.end(JSON.stringify({ error: 'User not found' }));
-//     }
-//   } else {
-//     // Invalid endpoint
-//     res.statusCode = 404;
-//     res.end(JSON.stringify({ error: 'Invalid endpoint' }));
-//   }
-// });
-
-
-
 // const express = require('express');
 // const cors = require('cors');
 
@@ -223,9 +149,13 @@ let users = [
 // });
 
 const server = http.createServer((req, res) => {
-  res.setHeader('Content-Type', 'application/json');
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+  const options = url.parse(`https://13.126.67.127:3000${req.url}`);
+  options.headers = req.headers;
+  const connector = http.request(options, (serverRes) => {
+    res.writeHead(serverRes.statusCode, serverRes.headers);
+    serverRes.pipe(res);
+  });
+  req.pipe(connector);
   
   if (req.method === 'GET' && req.url === '/') {
     res.end(JSON.stringify(users));
@@ -240,7 +170,7 @@ const server = http.createServer((req, res) => {
       res.statusCode = 404;
       res.end(JSON.stringify({ error: 'User not found' }));
     }
-  } else if (req.method === 'POST' && req.url === 'http://13.126.67.127:3000/users') {
+  } else if (req.method === 'POST' && req.url === 'http://13.126.67.127:3000/') {
     // Create a new user
     let body = '';
     req.on('data', (chunk) => {
