@@ -2,133 +2,84 @@
 <html>
 
 <head>
-    <title>User Management System</title>
+    <meta charset="UTF-8">
+    <title>My Form</title>
 </head>
 
 <body>
-    <h1>User Management System</h1>
-    <div>
-        <label>Name:</label>
-        <input type="text" id="name" />
-        <br />
-        <label>Email:</label>
-        <input type="email" id="email" />
-        <br />
-        <button onclick="createUser()">Create</button>
-    </div>
-    <hr />
-    <div>
-        <h2>Users</h2>
-        <ul id="user-list"></ul>
-    </div>
+    <form id="my-form" onsubmit="getInputValue()">
+        <label for="name">Name:</label>
+        <input type="text" id="name">
+        <br>
+        <button type="submit" onclick="AddToList()">Submit</button>
+        <button onclick="DeleteFromList()">Delete</button>
+        <!-- <button onclick="updateUser()">Update</button> -->
+    </form>
+
+    <div id="result"></div>
+</body>
     <script>
-        // Helper function to fetch data from the API
-        function fetchData(url, options) {
-            return fetch(url, options)
-                .then((response) => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
+            fetch('http://13.126.67.127:3000/users')
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
                 })
-                .catch((error) => {
-                    console.error('There was a problem with the network:', error);
+                .catch(error => {
+                    console.error(error);
                 });
-        }
-
-        //Function to create a new user
-        function createUser() {
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            const user = { name, email };
-            const options = {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Access-Control-Allow-Origin': 'http://localhost:5500',
-                    'Access-Control-Allow-Methods': 'GET, POST, UPDATE, DELETE',
-                },
-                body: JSON.stringify(user),
-            };
-            fetchData('http://13.126.67.127:3000/users', options)
-                .then((data) => {
-                    console.log('User created:', data);
-                    document.getElementById('name').value = '';
-                    document.getElementById('email').value = '';
-                    getUserList();
+            async function AddToList(){
+                const data = document.getElementById("name").value;
+                const Name = {'name' : data};
+    
+                await fetch('http://13.126.67.127:3000/users', {
+                    method: 'POST',
+                    headers: {
+                        'Access-Control-Allow-Origin': '*',
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE'
+                    },
+                    body: JSON.stringify(Name)
                 })
-                .catch((error) => {
-                    console.error('Error creating user:', error);
-                });
-        }
-
-        // Function to update a user by ID
-        function updateUser(id) {
-            const name = prompt('Enter the new name:');
-            const email = prompt('Enter the new email:');
-            const user = { name, email };
-            const options = {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Access-Control-Allow-Origin': 'http://localhost:5500',
-                    'Access-Control-Allow-Methods': 'GET, POST, UPDATE, DELETE',
-                },
-                body: JSON.stringify(user),
-            };
-            fetchData(`http://13.126.67.127:3000/users/${id}`, options)
-                .then((data) => {
-                    console.log('User updated:', data);
-                    getUserList();
-                })
-                .catch((error) => {
-                    console.error(`Error updating user with ID ${id}:`, error);
-                });
-        }
-
-        // Function to delete a user by ID
-        function deleteUser(id) {
-            const options = { method: 'DELETE' };
-            fetchData(`http://13.126.67.127:3000/users/${id}`, options)
-                .then(() => {
-                    console.log(`User with ID ${id} deleted`);
-                    getUserList();
-                })
-                .catch((error) => {
-                    console.error(`Error deleting user with ID ${id}:`, error);
-                });
-        }
-
-        // Function to display the list of users
-        function getUserList() {
-            const options = { method: 'GET' };
-            fetchData('http://13.126.67.127:3000/users', options)
-                .then((data) => {
-                    const userList = document.getElementById('user-list');
-                    userList.innerHTML = '';
-                    data.forEach((user) => {
-                        const li = document.createElement('li');
-                        li.textContent = `${user.name} (${user.email})`;
-                        const updateButton = document.createElement('button');
-                        updateButton.textContent = 'Update';
-                        updateButton.addEventListener('click', () => {
-                            updateUser(user.id);
-                        });
-                        const deleteButton = document.createElement('button');
-                        deleteButton.textContent = 'Delete';
-                        deleteButton.addEventListener('click', () => {
-                            deleteUser(user.id);
-                        });
-                        li.appendChild(updateButton);
-                        li.appendChild(deleteButton);
-                        userList.appendChild(li);
-                    });
-                })
-                .catch((error) => {
-                    console.error('Error getting user list:', error);
-                });
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(data);
+                    })
             }
-            getUserList();
-        </script>
-    </body>
-    </html>
+            async function DeleteFromList() {
+                try{
+                    const response = await fetch('http://13.126.67.127:3000/users/', {
+                    method: 'DELETE',
+                    headers: {
+                        'Access-Control-Allow-Origin': '*',
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE'
+                    },
+                    body: JSON.stringify({ id: 1 })
+                })
+                    const data = await response.json();
+                    console.log(data);
+                    }
+                catch (error) {
+                    console.error(error);
+                }
+                }
+            // async function updateUser(userId, userData) {
+            //         try {
+            //             const response = await fetch(`http://localhost:3000/users/${userId}`, {
+            //                 method: 'PUT',
+            //                 headers: {
+            //                     'Content-Type': 'application/json'
+            //                 },
+            //                 body: JSON.stringify(userData)
+            //             });
+
+            //             const data = await response.json();
+            //             console.log(data);
+            //         } catch (error) {
+            //             console.error(error);
+            //         }
+            //     }
+
+    </script>
+
+</html>
